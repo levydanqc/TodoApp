@@ -46,7 +46,6 @@ public class HomeFragment extends Fragment {
             public void onChanged(List<Tache> taches) {
                 adapter.setTodos(taches);
                 adapter.notifyDataSetChanged();
-
             }
         });
 

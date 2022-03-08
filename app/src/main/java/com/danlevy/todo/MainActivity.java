@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,9 +41,11 @@ public class MainActivity extends AppCompatActivity {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                Tache tache = new Tache("Acheter une maison", "Allo");
-                mDb.todoDao().insert(tache);
-//                mDb.todoDao().deleteAll();
+                if (mDb.todoDao().count() > 0) {
+                    findViewById(R.id.tv_notodo).setVisibility(View.INVISIBLE);
+                } else {
+                    findViewById(R.id.tv_notodo).setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -71,7 +74,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.bt_delete_all:
-                Toast.makeText(this, "Button DeleteAll", Toast.LENGTH_SHORT).show();
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.todoDao().deleteAll();
+                    }
+                });
+                Toast.makeText(this, "Suppression de toutes les tâches...", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.bt_add:
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {

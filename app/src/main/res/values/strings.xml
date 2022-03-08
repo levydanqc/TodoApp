@@ -2,5 +2,5 @@
     <string name="app_name">Todo</string>
     <string name="title_home">Taches</string>
     <string name="title_afaire">À faire</string>
-    <string name="no_notodo">todo!</string>
+    <string name="no_todo">Aucune tâche à afficher.</string>
 </resources>

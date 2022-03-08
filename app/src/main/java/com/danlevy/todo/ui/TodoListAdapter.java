@@ -40,29 +40,27 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     @Override
     public void onBindViewHolder(@NonNull TodoViewHolder todoViewHolder, int position) {
-//        if (tacheList != null) {
-        Tache current = tacheList.get(position);
-        todoViewHolder.title.setText(current.getTitle());
-        todoViewHolder.info.setText(current.getInfo());
+        if (tacheList != null) {
+            Tache current = tacheList.get(position);
+            todoViewHolder.title.setText(current.getTitle());
+            todoViewHolder.info.setText(current.getInfo());
 
-        int resID = context.getResources().getIdentifier("avatar" + current.getIcon(), "drawable", context.getPackageName());
-        todoViewHolder.icon.setImageDrawable(context.getResources().getDrawable(resID));
-//        } else {
-//            todoViewHolder.todoTextView.setText(R.string.no_notodo);
-//        }
+            int resID = context.getResources().getIdentifier("avatar" + current.getIcon(), "drawable", context.getPackageName());
+            todoViewHolder.icon.setImageDrawable(context.getResources().getDrawable(resID));
 
-        todoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("TAG", "onBindViewHolder: " + current.getId());
-                        mDb.todoDao().delete(current);
-                    }
-                });
-            }
-        });
+            todoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("TAG", "onBindViewHolder: " + current.getId());
+                            mDb.todoDao().delete(current);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     public void setTodos(List<Tache> taches) {
@@ -84,6 +82,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     public class TodoViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public TextView info;
+        public TextView noTodo;
         public ImageView icon;
 
         public TodoViewHolder(@NonNull View itemView) {
