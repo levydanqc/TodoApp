@@ -46,16 +46,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.setOnClickListener(this);
 
         mDb = TodoRoomDatabase.getDatabase(this);
-//        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mDb.todoDao().count() > 0) {
-//                    findViewById(R.id.tv_notodo).setVisibility(View.INVISIBLE);
-//                } else {
-//                    findViewById(R.id.tv_notodo).setVisibility(View.VISIBLE);
-//                }
-//            }
-//        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.todoDao().deleteAll();
+                mDb.todoDao().insert(new Tache("Ménage", "Nettoyer la cuisine"));
+                mDb.todoDao().insert(new Tache("Miscellaneous", "Installer les caméras de sécurité"));
+                mDb.todoDao().insert(new Tache("Jardin", "Ramasser les tomates"));
+            }
+        });
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
