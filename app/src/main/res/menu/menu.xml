@@ -13,10 +13,6 @@
         android:icon="@drawable/ic_baseline_delete_forever_24"
         android:title="Info"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/bt_add"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="Add"
-        app:showAsAction="ifRoom" />
+
 
 </menu>
