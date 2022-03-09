@@ -4,4 +4,6 @@
     <string name="title_afaire">À faire</string>
     <string name="no_todo">Aucune tâche à afficher.</string>
     <string name="add">Ajouter</string>
+    <string name="delete">Supprimer</string>
+    <string name="modify">Modifier</string>
 </resources>

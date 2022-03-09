@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                mDb.todoDao().deleteAll();
                 mDb.todoDao().insert(new Tache("Ménage", "Nettoyer la cuisine"));
                 mDb.todoDao().insert(new Tache("Miscellaneous", "Installer les caméras de sécurité"));
                 mDb.todoDao().insert(new Tache("Jardin", "Ramasser les tomates"));
@@ -99,6 +98,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case 0:
+                Toast.makeText(this, "Modifier", Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(this, "Supprimer", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.bt_admin:
@@ -107,9 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
                 } else if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && !admin) {
-                    admin = true;
-                    fab.setVisibility(View.VISIBLE);
-                    Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
+                    admin();
                 } else {
                     Toast.makeText(this, "Mode admin déjà activé", Toast.LENGTH_SHORT).show();
                 }
@@ -127,15 +137,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
+    public void admin() {
+        admin = true;
+        fab.setVisibility(View.VISIBLE);
+        Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_PERMISSION_CODE) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                admin = true;
-//                fab.setVisibility(View.VISIBLE);
-//                Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
+                admin();
             } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                         Manifest.permission.CAMERA)) {

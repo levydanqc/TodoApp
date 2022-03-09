@@ -2,6 +2,7 @@ package com.danlevy.todo.ui;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.danlevy.todo.R;
@@ -79,17 +81,25 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         else return 0;
     }
 
-    public class TodoViewHolder extends RecyclerView.ViewHolder {
+    public class TodoViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         public TextView title;
         public TextView info;
-        public TextView noTodo;
         public ImageView icon;
+        public CardView card;
 
         public TodoViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tv_todo);
             info = itemView.findViewById(R.id.tv_info);
             icon = itemView.findViewById(R.id.iv_icon);
+            card = itemView.findViewById(R.id.card);
+            card.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(this.getAdapterPosition(), 0, 0, "Modifier");
+            menu.add(this.getAdapterPosition(), 1, 1, "Supprimer");
         }
     }
 
