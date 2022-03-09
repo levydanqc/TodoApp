@@ -27,7 +27,7 @@ public interface TodoDao {
     @Query("update todo set title = :title, info = :info, chosen = :chosen where id = :id")
     int updateTache(int id, String title, String info, Boolean chosen);
 
-    @Query("select * from todo where chosen = 0 order by title DESC")
+    @Query("select * from todo order by title DESC")
     LiveData<List<Tache>> getTodos();
 
     @Query("select * from todo where chosen = 1")
