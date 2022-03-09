@@ -8,30 +8,23 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.danlevy.todo.R;
 import com.danlevy.todo.databinding.FragmentAfaireBinding;
-import com.danlevy.todo.model.Tache;
 import com.danlevy.todo.ui.AFaireListAdapter;
-import com.danlevy.todo.ui.TodoListAdapter;
-
-import java.util.List;
 
 public class AFaireFragment extends Fragment {
 
 
-    private AFaireViewModel aFaireViewModel;
     private FragmentAfaireBinding binding;
     private AFaireListAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        aFaireViewModel =
-                new ViewModelProvider(this).get(AFaireViewModel.class);
+        AFaireViewModel aFaireViewModel = new ViewModelProvider(this).get(AFaireViewModel.class);
 
         binding = FragmentAfaireBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -43,12 +36,9 @@ public class AFaireFragment extends Fragment {
         adapter = new AFaireListAdapter(context);
         recyclerView.setAdapter(adapter);
 
-        aFaireViewModel.getAllAFaire().observe(getViewLifecycleOwner(), new Observer<List<Tache>>() {
-            @Override
-            public void onChanged(List<Tache> taches) {
-                adapter.setTodos(taches);
-                adapter.notifyDataSetChanged();
-            }
+        aFaireViewModel.getAllAFaire().observe(getViewLifecycleOwner(), taches -> {
+            adapter.setTodos(taches);
+            adapter.notifyDataSetChanged();
         });
 
         return root;

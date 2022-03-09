@@ -12,12 +12,11 @@ import java.util.List;
 
 public class HomeViewModel extends AndroidViewModel {
 
-    private LiveData<List<Tache>> alltodos;
-    private TodoRoomDatabase mDb;
+    private final LiveData<List<Tache>> alltodos;
 
     public HomeViewModel(Application application) {
         super(application);
-        mDb = TodoRoomDatabase.getDatabase(application);
+        TodoRoomDatabase mDb = TodoRoomDatabase.getDatabase(application);
         alltodos = mDb.todoDao().getTodos();
     }
 

@@ -11,12 +11,11 @@ import com.danlevy.todo.model.Tache;
 import java.util.List;
 
 public class AFaireViewModel extends AndroidViewModel {
-    private LiveData<List<Tache>> allAFaire;
-    private TodoRoomDatabase mDb;
+    private final LiveData<List<Tache>> allAFaire;
 
     public AFaireViewModel(Application application) {
         super(application);
-        mDb = TodoRoomDatabase.getDatabase(application);
+        TodoRoomDatabase mDb = TodoRoomDatabase.getDatabase(application);
         allAFaire = mDb.todoDao().getAFaire();
     }
 

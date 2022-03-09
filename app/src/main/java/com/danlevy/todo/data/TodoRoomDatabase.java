@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-@Database(entities = {Tache.class}, version = 1, exportSchema = true)
+@Database(entities = {Tache.class}, version = 1)
 public abstract class TodoRoomDatabase extends RoomDatabase {
     public static volatile TodoRoomDatabase INSTANCE;
 

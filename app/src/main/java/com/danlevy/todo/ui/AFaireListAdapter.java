@@ -21,7 +21,7 @@ public class AFaireListAdapter extends RecyclerView.Adapter<AFaireListAdapter.To
 
     private List<Tache> tacheList;
     private TodoRoomDatabase mDb;
-    private Context context;
+    private final Context context;
 
     public AFaireListAdapter(Context context) {
         this.context = context;
@@ -34,7 +34,7 @@ public class AFaireListAdapter extends RecyclerView.Adapter<AFaireListAdapter.To
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.recyclerview_item, viewGroup, false);
         mDb = TodoRoomDatabase.getDatabase(viewGroup.getContext());
-        return new AFaireListAdapter.TodoViewHolder(view);
+        return new TodoViewHolder(view);
     }
 
     @Override
@@ -47,17 +47,7 @@ public class AFaireListAdapter extends RecyclerView.Adapter<AFaireListAdapter.To
             int resID = context.getResources().getIdentifier("avatar" + current.getIcon(), "drawable", context.getPackageName());
             todoViewHolder.icon.setImageDrawable(context.getResources().getDrawable(resID));
 
-            todoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), !current.getChosen());
-                        }
-                    });
-                }
-            });
+            todoViewHolder.itemView.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), !current.getChosen())));
 
         }
     }
@@ -74,7 +64,7 @@ public class AFaireListAdapter extends RecyclerView.Adapter<AFaireListAdapter.To
     }
 
 
-    public class TodoViewHolder extends RecyclerView.ViewHolder {
+    public static class TodoViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
         public TextView info;
         public ImageView icon;

@@ -22,7 +22,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
     private List<Tache> tacheList;
     private TodoRoomDatabase mDb;
-    private Context context;
+    private final Context context;
 
     public TodoListAdapter(Context context) {
         this.context = context;
@@ -35,7 +35,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.recyclerview_item, viewGroup, false);
         mDb = TodoRoomDatabase.getDatabase(viewGroup.getContext());
-        return new TodoListAdapter.TodoViewHolder(view);
+        return new TodoViewHolder(view);
     }
 
     @Override
@@ -49,17 +49,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
             int resID = context.getResources().getIdentifier("avatar" + current.getIcon(), "drawable", context.getPackageName());
             todoViewHolder.icon.setImageDrawable(context.getResources().getDrawable(resID));
 
-            todoViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), true);
-                        }
-                    });
-                }
-            });
+            todoViewHolder.itemView.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), true)));
         }
     }
 
@@ -75,7 +65,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     }
 
 
-    public class TodoViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    public static class TodoViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         public TextView title;
         public TextView info;
         public ImageView icon;

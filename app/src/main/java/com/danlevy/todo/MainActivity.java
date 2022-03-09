@@ -15,13 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -36,7 +34,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
     private static final int CAMERA_PERMISSION_CODE = 1;
-    private ActivityMainBinding binding;
     private TodoRoomDatabase mDb;
     private FloatingActionButton fab;
     private boolean admin;
@@ -45,20 +42,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(this);
 
         mDb = TodoRoomDatabase.getDatabase(this);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mDb.todoDao().insert(new Tache("Ménage", "Nettoyer la cuisine"));
-                mDb.todoDao().insert(new Tache("Miscellaneous", "Installer les caméras de sécurité"));
-                mDb.todoDao().insert(new Tache("Jardin", "Ramasser les tomates"));
-            }
+        AppExecutors.getInstance().diskIO().execute(() -> {
+            mDb.todoDao().insert(new Tache("Ménage", "Nettoyer la cuisine"));
+            mDb.todoDao().insert(new Tache("Miscellaneous", "Installer les caméras de sécurité"));
+            mDb.todoDao().insert(new Tache("Jardin", "Ramasser les tomates"));
         });
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -69,14 +63,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
-                if (((FragmentNavigator.Destination) navDestination).getClassName().equals("com.danlevy.todo.ui.afaire.AFaireFragment")) {
-                    fab.setVisibility(View.INVISIBLE);
-                } else if (admin) {
-                    fab.setVisibility(View.VISIBLE);
-                }
+        navController.addOnDestinationChangedListener((navController1, navDestination, bundle) -> {
+            if (((FragmentNavigator.Destination) navDestination).getClassName().equals("com.danlevy.todo.ui.afaire.AFaireFragment")) {
+                fab.setVisibility(View.INVISIBLE);
+            } else if (admin) {
+                fab.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -92,17 +83,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final EditText titre = new EditText(context);
         final EditText info = new EditText(context);
 
+        titre.setSingleLine();
+        info.setSingleLine();
+
         if (id == -1) {
             titre.setHint("Titre");
             info.setHint("Description");
         } else {
-            AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    Tache tache = mDb.todoDao().getTodo(id);
-                    titre.setText(tache.getTitle());
-                    info.setText(tache.getInfo());
-                }
+            AppExecutors.getInstance().diskIO().execute(() -> {
+                Tache tache = mDb.todoDao().getTodo(id);
+                titre.setText(tache.getTitle());
+                info.setText(tache.getInfo());
             });
         }
 
@@ -110,12 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layout.addView(info);
         builder.setView(layout);
         builder.setPositiveButton("Valider", this);
-        builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton("Annuler", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
         dialog.show();
@@ -141,26 +127,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         titre.addTextChangedListener(watcher);
         info.addTextChangedListener(watcher);
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (id == -1) {
-                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDb.todoDao().insert(new Tache(titre.getText().toString(), info.getText().toString()));
-                        }
-                    });
-                } else {
-                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            mDb.todoDao().updateTache(id, titre.getText().toString(), info.getText().toString(), false);
-                        }
-                    });
-                }
-                dialog.dismiss();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (id == -1) {
+                AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().insert(new Tache(titre.getText().toString(), info.getText().toString())));
+            } else {
+                AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().updateTache(id, titre.getText().toString(), info.getText().toString(), false));
             }
+            dialog.dismiss();
         });
 
     }
@@ -177,12 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showModal("Modifier une tache", item.getGroupId());
                 break;
             case 1:
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        mDb.todoDao().delete(item.getGroupId());
-                    }
-                });
+                AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().delete(item.getGroupId()));
         }
         return super.onContextItemSelected(item);
     }
@@ -195,10 +163,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fab:
-                showModal("Ajouter une tache", -1);
-                break;
+        if (v.getId() == R.id.fab) {
+            showModal("Ajouter une tache", -1);
         }
     }
 
@@ -209,12 +175,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                } else if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && !admin) {
-                    admin(true);
-                } else {
-                    admin(false);
-                }
+                } else admin(ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && !admin);
                 return true;
             case R.id.bt_delete_all:
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -248,18 +210,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     dialog.setTitle("Accès à la caméra");
                     dialog.setMessage("L'accès à la caméra est nécessaire à l'activation du mode Admin" +
                             "pour une reconnaissance faciale.");
-                    dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                        }
-                    });
-                    dialog.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(MainActivity.this, "Impossible d'activer le mode Admin.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    dialog.setPositiveButton("Ok", (dialog1, which) -> requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE));
+                    dialog.setNegativeButton("Annuler", (dialog12, which) -> Toast.makeText(MainActivity.this, "Impossible d'activer le mode Admin.", Toast.LENGTH_SHORT).show());
                     dialog.show();
                 } else {
                     Toast.makeText(this, "Permission refusé...", Toast.LENGTH_SHORT).show();

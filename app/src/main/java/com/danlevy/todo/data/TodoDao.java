@@ -22,10 +22,10 @@ public interface TodoDao {
     void deleteAll();
 
     @Query("delete from todo where id = :id")
-    int delete(int id);
+    void delete(int id);
 
     @Query("update todo set title = :title, info = :info, chosen = :chosen where id = :id")
-    int updateTache(int id, String title, String info, Boolean chosen);
+    void updateTache(int id, String title, String info, Boolean chosen);
 
     @Query("select * from todo order by title DESC")
     LiveData<List<Tache>> getTodos();

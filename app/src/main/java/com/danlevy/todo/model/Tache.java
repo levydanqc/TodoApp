@@ -20,11 +20,9 @@ public class Tache {
     @ColumnInfo(name = "info")
     private String info;
 
-    @NonNull
     @ColumnInfo(name = "icon")
     private int icon;
 
-    @NonNull
     @ColumnInfo(name = "chosen")
     private boolean chosen;
 
@@ -43,31 +41,29 @@ public class Tache {
         this.id = id;
     }
 
+    @NonNull
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(@NonNull String title) {
-        this.title = title;
-    }
-
+    @NonNull
     public String getInfo() {
         return info;
-    }
-
-    public void setInfo(@NonNull String info) {
-        this.info = info;
     }
 
     public int getIcon() {
         return icon;
     }
 
-    public void setIcon(@NonNull int icon) {
+    public void setIcon(int icon) {
         this.icon = icon;
     }
 
-    public void setChosen(@NonNull boolean chosen) { this.chosen = chosen; }
+    public void setChosen(boolean chosen) {
+        this.chosen = chosen;
+    }
 
-    public boolean getChosen() { return chosen; }
+    public boolean getChosen() {
+        return chosen;
+    }
 }
