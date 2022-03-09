@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -121,16 +123,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
                 !titre.getText().toString().isEmpty() && !info.getText().toString().isEmpty());
 
-        View.OnFocusChangeListener focusChange = new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+        TextWatcher watcher = new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
                         !titre.getText().toString().isEmpty() && !info.getText().toString().isEmpty());
             }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         };
 
-        titre.setOnFocusChangeListener(focusChange);
-        info.setOnFocusChangeListener(focusChange);
+        titre.addTextChangedListener(watcher);
+        info.addTextChangedListener(watcher);
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
