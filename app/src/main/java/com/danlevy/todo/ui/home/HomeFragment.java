@@ -3,6 +3,7 @@ package com.danlevy.todo.ui.home;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.danlevy.todo.R;
+import com.danlevy.todo.data.AppExecutors;
 import com.danlevy.todo.databinding.FragmentHomeBinding;
 import com.danlevy.todo.model.Tache;
 import com.danlevy.todo.ui.TodoListAdapter;
@@ -41,6 +43,8 @@ public class HomeFragment extends Fragment {
         adapter = new TodoListAdapter(context);
         recyclerView.setAdapter(adapter);
 
+        registerForContextMenu(recyclerView);
+
         homeViewModel.getAllTodo().observe(getViewLifecycleOwner(), new Observer<List<Tache>>() {
             @Override
             public void onChanged(List<Tache> taches) {
@@ -51,6 +55,7 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
+
 
     @Override
     public void onDestroyView() {

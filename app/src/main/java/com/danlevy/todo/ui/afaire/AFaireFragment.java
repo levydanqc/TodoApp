@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.danlevy.todo.R;
 import com.danlevy.todo.databinding.FragmentAfaireBinding;
 import com.danlevy.todo.model.Tache;
+import com.danlevy.todo.ui.AFaireListAdapter;
 import com.danlevy.todo.ui.TodoListAdapter;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class AFaireFragment extends Fragment {
 
     private AFaireViewModel aFaireViewModel;
     private FragmentAfaireBinding binding;
-    private TodoListAdapter adapter;
+    private AFaireListAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class AFaireFragment extends Fragment {
         Context context = recyclerView.getContext();
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setHasFixedSize(true);
-        adapter = new TodoListAdapter(context);
+        adapter = new AFaireListAdapter(context);
         recyclerView.setAdapter(adapter);
 
         aFaireViewModel.getAllAFaire().observe(getViewLifecycleOwner(), new Observer<List<Tache>>() {

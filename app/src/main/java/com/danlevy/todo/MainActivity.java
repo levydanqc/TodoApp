@@ -77,6 +77,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case 0:
+                // do your stuff
+                break;
+            case 1:
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.todoDao().delete(item.getGroupId());
+                    }
+                });
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
@@ -95,19 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
                 break;
         }
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case 0:
-                Toast.makeText(this, "Modifier", Toast.LENGTH_SHORT).show();
-                break;
-            case 1:
-                Toast.makeText(this, "Supprimer", Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return super.onContextItemSelected(item);
     }
 
     @Override

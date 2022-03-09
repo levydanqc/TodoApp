@@ -2,7 +2,6 @@ package com.danlevy.todo.data;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
@@ -19,8 +18,8 @@ public interface TodoDao {
     @Query("delete from todo")
     void deleteAll();
 
-    @Delete
-    int delete(Tache tache);
+    @Query("delete from todo where id = :id")
+    int delete(int id);
 
     @Query("update todo set title = :title, info = :info, chosen = :chosen where id = :id")
     int updateTache(int id, String title, String info, Boolean chosen);
