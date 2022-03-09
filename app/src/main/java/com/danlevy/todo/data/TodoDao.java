@@ -15,6 +15,9 @@ public interface TodoDao {
     @Insert
     void insert(Tache tache);
 
+    @Query("select * from todo where id = :id")
+    Tache getTodo(int id);
+
     @Query("delete from todo")
     void deleteAll();
 

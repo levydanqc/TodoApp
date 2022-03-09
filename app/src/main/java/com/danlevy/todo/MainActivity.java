@@ -1,12 +1,15 @@
 package com.danlevy.todo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,7 +32,7 @@ import com.danlevy.todo.model.Tache;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnClickListener {
     private static final int CAMERA_PERMISSION_CODE = 1;
     private ActivityMainBinding binding;
     private TodoRoomDatabase mDb;
@@ -76,11 +79,92 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    public void showModal(String title, int id) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+
+        Context context = getApplicationContext();
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        final EditText titre = new EditText(context);
+        final EditText info = new EditText(context);
+
+        if (id == -1) {
+            titre.setHint("Titre");
+            info.setHint("Description");
+        } else {
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Tache tache = mDb.todoDao().getTodo(id);
+                    titre.setText(tache.getTitle());
+                    info.setText(tache.getInfo());
+                }
+            });
+        }
+
+        layout.addView(titre);
+        layout.addView(info);
+        builder.setView(layout);
+        builder.setPositiveButton("Valider", this);
+        builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
+                !titre.getText().toString().isEmpty() && !info.getText().toString().isEmpty());
+
+        View.OnFocusChangeListener focusChange = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(
+                        !titre.getText().toString().isEmpty() && !info.getText().toString().isEmpty());
+            }
+        };
+
+        titre.setOnFocusChangeListener(focusChange);
+        info.setOnFocusChangeListener(focusChange);
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (id == -1) {
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.todoDao().insert(new Tache(titre.getText().toString(), info.getText().toString()));
+                        }
+                    });
+                } else {
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mDb.todoDao().updateTache(id, titre.getText().toString(), info.getText().toString(), false);
+                        }
+                    });
+                }
+                dialog.dismiss();
+            }
+        });
+
+    }
+
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+    }
+
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case 0:
-                // do your stuff
+                showModal("Modifier une tache", item.getGroupId());
                 break;
             case 1:
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
@@ -103,13 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab:
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Tache tache = new Tache("Acheter une maison", "Allo");
-                        mDb.todoDao().insert(tache);
-                    }
-                });
+                showModal("Ajouter une tache", -1);
                 break;
         }
     }
@@ -123,9 +201,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
                 } else if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && !admin) {
-                    admin();
+                    admin(true);
                 } else {
-                    Toast.makeText(this, "Mode admin déjà activé", Toast.LENGTH_SHORT).show();
+                    admin(false);
                 }
                 return true;
             case R.id.bt_delete_all:
@@ -141,10 +219,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onOptionsItemSelected(item);
     }
 
-    public void admin() {
-        admin = true;
-        fab.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
+    public void admin(boolean isAdmin) {
+        admin = isAdmin;
+        fab.setVisibility(isAdmin ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -153,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == CAMERA_PERMISSION_CODE) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                admin();
+                admin(true);
             } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                         Manifest.permission.CAMERA)) {
@@ -181,4 +258,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
 }
