@@ -18,7 +18,7 @@ public class HomeViewModel extends AndroidViewModel {
     public HomeViewModel(Application application) {
         super(application);
         mDb = TodoRoomDatabase.getDatabase(application);
-        alltodos = mDb.todoDao().getAll();
+        alltodos = mDb.todoDao().getTodos();
     }
 
     public LiveData<List<Tache>> getAllTodo() {

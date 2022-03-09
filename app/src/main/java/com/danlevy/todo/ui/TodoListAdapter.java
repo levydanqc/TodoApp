@@ -54,8 +54,8 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
                     AppExecutors.getInstance().diskIO().execute(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d("TAG", "onBindViewHolder: " + current.getId());
-                            mDb.todoDao().delete(current);
+                            Log.d("TAG", "Chosen: " + current.getChosen());
+                            mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), !current.getChosen());
                         }
                     });
                 }

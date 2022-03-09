@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActivityMainBinding binding;
     private TodoRoomDatabase mDb;
     private FloatingActionButton fab;
+    private boolean admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
                 if (((FragmentNavigator.Destination) navDestination).getClassName().equals("com.danlevy.todo.ui.afaire.AFaireFragment")) {
                     fab.setVisibility(View.INVISIBLE);
+                } else if (admin) {
+                    fab.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -102,7 +105,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (ContextCompat.checkSelfPermission(MainActivity.this,
                         Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-                } else if (fab.getVisibility() != View.VISIBLE) {
+                } else if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED && !admin) {
+                    admin = true;
                     fab.setVisibility(View.VISIBLE);
                     Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
                 } else {
@@ -128,9 +133,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == CAMERA_PERMISSION_CODE) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission is granted. Continue the action or workflow
-                // in your app.
-
+//                admin = true;
+//                fab.setVisibility(View.VISIBLE);
+//                Toast.makeText(this, "Mode admin activé", Toast.LENGTH_SHORT).show();
             } else if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                         Manifest.permission.CAMERA)) {

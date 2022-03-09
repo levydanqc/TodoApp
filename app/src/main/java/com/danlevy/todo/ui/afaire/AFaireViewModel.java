@@ -1,18 +1,26 @@
 package com.danlevy.todo.ui.afaire;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-public class AFaireViewModel extends ViewModel {
-    private MutableLiveData<String> mText;
+import com.danlevy.todo.data.TodoRoomDatabase;
+import com.danlevy.todo.model.Tache;
 
-    public AFaireViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+import java.util.List;
+
+public class AFaireViewModel extends AndroidViewModel {
+    private LiveData<List<Tache>> allAFaire;
+    private TodoRoomDatabase mDb;
+
+    public AFaireViewModel(Application application) {
+        super(application);
+        mDb = TodoRoomDatabase.getDatabase(application);
+        allAFaire = mDb.todoDao().getAFaire();
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<List<Tache>> getAllAFaire() {
+        return allAFaire;
     }
 }

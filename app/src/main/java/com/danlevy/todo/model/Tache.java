@@ -24,10 +24,14 @@ public class Tache {
     @ColumnInfo(name = "icon")
     private int icon;
 
+    @NonNull
+    @ColumnInfo(name = "chosen")
+    private boolean chosen;
 
     public Tache(@NonNull String title, @NonNull String info) {
         this.title = title;
         this.info = info;
+        this.chosen = false;
         this.icon = new Random().nextInt(5);
     }
 
@@ -62,4 +66,8 @@ public class Tache {
     public void setIcon(@NonNull int icon) {
         this.icon = icon;
     }
+
+    public void setChosen(@NonNull boolean chosen) { this.chosen = chosen; }
+
+    public boolean getChosen() { return chosen; }
 }
