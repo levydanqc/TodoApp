@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Todo</string>
+    <string name="app_name">DoMe!</string>
     <string name="title_home">Taches</string>
     <string name="title_afaire">À faire</string>
     <string name="no_todo">Aucune tâche à afficher.</string>
