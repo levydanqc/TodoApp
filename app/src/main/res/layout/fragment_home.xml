@@ -18,6 +18,26 @@
         app:layout_constraintTop_toTopOf="@+id/rv_todos"
         app:layout_constraintVertical_bias="0.15" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:clickable="true"
+        android:contentDescription="@string/add"
+        android:src="@drawable/ic_baseline_add_24"
+        android:visibility="invisible"
+        app:backgroundTint="#0069C5"
+        app:layout_constraintBottom_toBottomOf="@+id/rv_todos"
+        app:layout_constraintEnd_toEndOf="@+id/rv_todos"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rv_todos"
+        app:layout_constraintVertical_bias="0.98"
+        app:tint="@android:color/white"
+        tools:ignore="ImageContrastCheck" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_todos"
         android:layout_width="match_parent"
@@ -31,5 +51,6 @@
         tools:listitem="@layout/recyclerview_item">
 
     </androidx.recyclerview.widget.RecyclerView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

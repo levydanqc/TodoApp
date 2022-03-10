@@ -23,6 +23,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
     private List<Tache> tacheList;
     private TodoRoomDatabase mDb;
     private final Context context;
+    private boolean isAdmin;
 
     public TodoListAdapter(Context context) {
         this.context = context;
@@ -45,11 +46,14 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
             todoViewHolder.title.setText(current.getTitle());
             todoViewHolder.info.setText(current.getInfo());
             todoViewHolder.id = current.getId();
+            todoViewHolder.isAdmin = isAdmin;
 
             int resID = context.getResources().getIdentifier("avatar" + current.getIcon(), "drawable", context.getPackageName());
             todoViewHolder.icon.setImageDrawable(context.getResources().getDrawable(resID));
 
-            todoViewHolder.itemView.setOnClickListener(v -> AppExecutors.getInstance().diskIO().execute(() -> mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), true)));
+            todoViewHolder.itemView.setOnClickListener(v ->
+                    AppExecutors.getInstance().diskIO().execute(() ->
+                            mDb.todoDao().updateTache(current.getId(), current.getTitle(), current.getInfo(), true)));
         }
     }
 
@@ -64,12 +68,16 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
         else return 0;
     }
 
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
 
     public static class TodoViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         public TextView title;
         public TextView info;
         public ImageView icon;
         public int id;
+        private boolean isAdmin;
 
         public TodoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -82,8 +90,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.TodoVi
 
         @Override
         public void onCreateContextMenu(@NonNull ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(id, 0, 0, "Modifier");
-            menu.add(id, 1, 1, "Supprimer");
+            if (isAdmin) {
+                menu.add(id, 0, 0, "Modifier");
+                menu.add(id, 1, 1, "Supprimer");
+            }
         }
     }
 
