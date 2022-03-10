@@ -33,10 +33,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private FragmentHomeBinding binding;
     private TodoListAdapter adapter;
     private TodoRoomDatabase mDb;
-    private Boolean isAdmin = false;
+    private boolean isAdmin = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        if (savedInstanceState != null)
+            isAdmin = savedInstanceState.getBoolean("isAdmin");
+
         HomeViewModel homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         homeViewModel.getIsAdmin().observe(getViewLifecycleOwner(), this::setAdmin);
 
@@ -64,7 +67,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             adapter.setTodos(taches);
             adapter.notifyDataSetChanged();
         });
-
 
         return root;
     }
@@ -170,9 +172,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         binding = null;
     }
 
-    public void setAdmin(Boolean admin) {
+    public void setAdmin(boolean admin) {
         isAdmin = admin;
         adapter.setAdmin(admin);
         adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("isAdmin", isAdmin);
+    }
+
 }
